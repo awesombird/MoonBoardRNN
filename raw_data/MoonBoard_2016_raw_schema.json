@@ -1,0 +1,122 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "type": "object",
+    "properties": {
+        "problem_name": {
+            "type": "string"
+        },
+        "info": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "url": {
+            "type": "string"
+        },
+        "num_empty": {
+            "type": "integer"
+        },
+        "num_stars": {
+            "type": "integer"
+        },
+        "moves": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "Id": {
+                        "type": "integer"
+                    },
+                    "Description": {
+                        "type": "string"
+                    },
+                    "IsStart": {
+                        "type": "boolean"
+                    },
+                    "IsEnd": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "Description",
+                    "Id",
+                    "IsEnd",
+                    "IsStart"
+                ]
+            }
+        },
+        "grade": {
+            "type": "string"
+        },
+        "UserGrade": {
+            "type": "null"
+        },
+        "isBenchmark": {
+            "type": "boolean"
+        },
+        "repeats": {
+            "type": "integer"
+        },
+        "ProblemType": {
+            "type": "null"
+        },
+        "IsMaster": {
+            "type": "boolean"
+        },
+        "setter": {
+            "type": "object",
+            "properties": {
+                "Id": {
+                    "type": "string"
+                },
+                "Nickname": {
+                    "type": "string"
+                },
+                "Firstname": {
+                    "type": "string"
+                },
+                "Lastname": {
+                    "type": "string"
+                },
+                "City": {
+                    "type": "string"
+                },
+                "Country": {
+                    "type": "string"
+                },
+                "ProfileImageUrl": {
+                    "type": "string"
+                },
+                "CanShareData": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "CanShareData",
+                "City",
+                "Country",
+                "Firstname",
+                "Id",
+                "Lastname",
+                "Nickname",
+                "ProfileImageUrl"
+            ]
+        }
+    },
+    "required": [
+        "IsMaster",
+        "ProblemType",
+        "UserGrade",
+        "grade",
+        "info",
+        "isBenchmark",
+        "moves",
+        "num_empty",
+        "num_stars",
+        "problem_name",
+        "repeats",
+        "setter",
+        "url"
+    ]
+}
