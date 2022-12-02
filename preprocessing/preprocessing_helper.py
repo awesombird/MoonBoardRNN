@@ -10,16 +10,17 @@ import heapq
 import matplotlib.pyplot as plt
 import pandas as pd
 
+# load package wide constants
+import constants
+
 global hyperparameter, RightHandfeature_dict, LeftHandfeature_dict, operationList, MoonBoard_2016_withurl
 
 hyperparameter = [1, 1]
 operationList = ["RH", "LH"]
 
-cwd = os.getcwd()
-parent_wd = cwd.replace('/preprocessing', '')
-left_hold_feature_path = parent_wd + '/raw_data/HoldFeature2016LeftHand.csv'
-right_hold_feature_path = parent_wd + '/raw_data/HoldFeature2016RightHand.csv'
-url_data_path = parent_wd + '/raw_data/moonGen_scrape_2016_cp'
+left_hold_feature_path = constants.HOLD_FEATURES_LEFT_HAND_PATH
+right_hold_feature_path = constants.HOLD_FEATURES_RIGHT_HAND_PATH
+url_data_path = constants.SCRAPE_DATA_PATH
 
 LeftHandfeatures = pd.read_csv(left_hold_feature_path, dtype=str)
 RightHandfeatures = pd.read_csv(right_hold_feature_path, dtype=str)
