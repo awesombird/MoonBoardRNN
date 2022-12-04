@@ -139,20 +139,27 @@ def classify_and_reorganize_data(raw_data, save_path, delta_xy_mode = False, pri
     X_dict_nograde = {}
     Y_dict_nograde = {}
     list_fail = []
+
     for key, item in raw_data.items():
         # create x_vector
         try:
+            # what are the start mid end items? cant find them in the JSON
+            # these denote the type of hold whether it is within the route of start/end
             n_start = len(item['start'])
             n_mid = len(item['mid'])
             n_end = len(item['end'])
             
+            # should have at most 2 start and end holds
             assert(n_start <= 2)
             assert(n_end <= 2)
             
+            # total number of holds = sum of start, mid and end
             n_hold = n_start + n_mid + n_end
+            # sort by hold id?
             item['start'].sort(key = lambda x: x[1])
             item['mid'].sort(key = lambda x: x[1])
             item['end'].sort(key = lambda x: x[1])
+            # join lists together
             combined_list = item['start'] + item['mid'] + item['end']
 
             if delta_xy_mode:
@@ -808,9 +815,9 @@ def produce_sequence(keyNum, X_dict, n_return = 1, printout = False):
     tempstatus3 = []
     distanceScore = []
     
-    # Run the algorithm for 6 times
+    # Run the algorithm to add moves (n-1) between each hold
     totalRun = status[0].totalNumOfHold - 1
-    for i in range(totalRun):  # how many new move you wan to add
+    for i in range(totalRun):  # how many new moves you want to add
         status = addNewBeta(status, printOut = False)
         finalScore = [] 
         for i in status:   

@@ -15,6 +15,12 @@ This is the project repository for the CS230 Spring 2020 course project, and is 
 ### `raw_data`
 This folder contains the hold difficulty scores evaluated by climbing experts (`\raw_data\HoldFeature2016LeftHand.csv`, `\raw_data\HoldFeature2016RightHand.csv`, `\raw_data\HoldFeature2016.xlsx`) and our scraped raw data from the MoonBoard website (`\raw_data\moonGen_scrape_2016_final`).
 
+The MoonBoard is a 11x18 grid, with holds in a subset of the positions. The hold difficulties are stored in the following files:
+
+- `HoldFeature2016LeftHand` hold difficulties when using left hand.
+- `HoldFeature2016RightHand` hold difficulties when using right hand.
+- `HoldFeature2016` hold difficulties in an array of 6 values - what do they mean?
+
 The raw data from the MoonBoard website was scraped using the code in https://github.com/gestalt-howard/moonGen. We acknowledged the permission from Howard (Cheng-Hao) Tai to use that code.
 
 ### `preprocessing`
