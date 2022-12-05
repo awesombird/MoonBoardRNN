@@ -3,7 +3,6 @@
 # Script containing helper functions for accessing and navigating the MoonBoard web-site
 
 import numpy as np
-import os
 import copy
 import pickle
 import heapq
@@ -241,16 +240,17 @@ def generate_organized_sequence_data(raw_data, save_path):
     X_dict_seq = {}
     list_fail = []
     for key, item in raw_data.items():
-        try:
-            output = produce_sequence(keyNum = key, X_dict = raw_data, n_return = 1)
-            result = np.vstack([
-                raw_data[key][6:8, output[0].handSequence], 
-                (np.array(output[0].handOperator) == 'LH')*(-1) + (np.array(output[0].handOperator) == 'RH')*1, 
-                output[0].successScoreSequence])
-            X_dict_seq[key] = result
-        except:
-            print('data with key %s contains error' %key)
-            list_fail.append(key)
+        # try:
+            # TODO: error here
+        output = produce_sequence(keyNum = key, X_dict = raw_data, n_return = 1)
+        result = np.vstack([
+            raw_data[key][6:8, output[0].handSequence], 
+            (np.array(output[0].handOperator) == 'LH')*(-1) + (np.array(output[0].handOperator) == 'RH')*1, 
+            output[0].successScoreSequence])
+        X_dict_seq[key] = result
+        # except:
+        #     print('data with key %s contains error' %key)
+        #     list_fail.append(key)
         
         save_pickle(X_dict_seq, save_path)
 
@@ -492,19 +492,14 @@ def makeGaussian(targetXY, fwhm = 3, center = None, lasthand = "LH"):
     from target hand to remaining hand (center)
     fwhm is full-width-half-maximum, which can be thought of as an effective distance of dynamic range.
     """
-    x = targetXY[0]
-    y = targetXY[1]
+    (x, y) = targetXY
+    (x0, y0) = center
 
-    x0 = center[0]
-    y0 = center[1]
-    if lasthand == "RH":
-        firstGauss = np.exp(-4*np.log(2) * ((x-(x0-3))**2 + (y-(y0+1.5))**2) / fwhm**2)
-        secondGauss = np.exp(-4*np.log(2) * ((x-(x0+1))**2 + (y-(y0+0.5))**2) / fwhm**2) * 0.4
-        thirdGauss =  np.exp(-4*np.log(2) * ((x-(x0))**2 + (y-(y0+1))**2) / fwhm**2) * 0.3
-    if lasthand == "LH":
-        firstGauss = np.exp(-4*np.log(2) * ((x-(x0+3))**2 + (y-(y0+1.5))**2) / fwhm**2)
-        secondGauss = np.exp(-4*np.log(2) * ((x-(x0-1))**2 + (y-(y0+0.5))**2) / fwhm**2) * 0.4
-        thirdGauss =  np.exp(-4*np.log(2) * ((x-(x0))**2 + (y-(y0+1))**2) / fwhm**2) * 0.3
+    firstGauss = np.exp(-4*np.log(2) * ((x-(x0+3 * (-1 if lasthand == "RH" else 1)))**2 + (y-(y0+1.5))**2) / fwhm**2)
+    secondGauss = np.exp(-4*np.log(2) * ((x-(x0+1 * (1 if lasthand == "RH" else -1)))**2 + (y-(y0+0.5))**2) / fwhm**2) * 0.4
+    # TODO: why is thirdGauss unused?
+    # thirdGauss =  np.exp(-4*np.log(2) * ((x-(x0))**2 + (y-(y0+1))**2) / fwhm**2) * 0.3
+
     return  firstGauss + secondGauss
 
 def successRateByDistance(distance, dynamicThreshold):
