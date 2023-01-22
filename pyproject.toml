@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "moonboardrnn"
+version = "0.1.0"
+description = "A MoonBoard Problem Generator (DeepRouteSet) and Grade Predictor (GradeNet) based on LSTM"
+authors = ["jrchang612 <jrchang612@gmail.com>", "Andrew Cox <18695702+Cox-Andrew@users.noreply.github.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8.1"
+ipykernel = "^6.20.2"
+numpy = "^1.24.1"
+pandas = "^1.5.3"
+genson = "^1.2.2"
+matplotlib = "^3.6.3"
+openpyxl = "^3.0.10"
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^6.0.0"
+black = "^22.12.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
