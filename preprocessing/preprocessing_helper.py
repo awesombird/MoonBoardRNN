@@ -116,6 +116,7 @@ def classify_and_reorganize_data(raw_data, save_path, delta_xy_mode = False, pri
     - delta_xy_mode: 
       if set False(default), the x_vector compiled will be of shape (10, n_holds) (6 hold features, x, y, is_start, is_end)
       if set True, the x_vector compiled will be of shape (14, n_holds) (6 hold features, x, y, dx1, dy1, dx2, dy2, is_start, is_end)
+    # TODO: what do the deltas relate to?
     
     Classify and process the raw data into 4 caterogies/8 dictionaries:
     - X_dict_benchmark_withgrade: the input data that is benchmarked and contains user grading.
@@ -140,10 +141,9 @@ def classify_and_reorganize_data(raw_data, save_path, delta_xy_mode = False, pri
     list_fail = []
 
     for key, item in raw_data.items():
-        # create x_vector
+        # create x_vector for a route
         try:
-            # what are the start mid end items? cant find them in the JSON
-            # these denote the type of hold whether it is within the route of start/end
+            # TODO: cant find them in the JSON? start/mid/end holds?
             n_start = len(item['start'])
             n_mid = len(item['mid'])
             n_end = len(item['end'])
@@ -154,13 +154,14 @@ def classify_and_reorganize_data(raw_data, save_path, delta_xy_mode = False, pri
             
             # total number of holds = sum of start, mid and end
             n_hold = n_start + n_mid + n_end
-            # sort by hold id?
+            # sort by y coordinate
             item['start'].sort(key = lambda x: x[1])
             item['mid'].sort(key = lambda x: x[1])
             item['end'].sort(key = lambda x: x[1])
-            # join lists together
+            # combined list of holds
             combined_list = item['start'] + item['mid'] + item['end']
 
+            # generation of x_vector
             if delta_xy_mode:
                 x_vectors = np.zeros((14, n_hold))
                 for i, (x, y) in enumerate(combined_list):
@@ -178,9 +179,12 @@ def classify_and_reorganize_data(raw_data, save_path, delta_xy_mode = False, pri
 
             else:
                 x_vectors = np.zeros((10, n_hold))
+                # for each hold set hand features and position
                 for i, (x, y) in enumerate(combined_list):
+                    # TODO: feature_dict is referencing from outside this file
                     x_vectors[0:6, i] = feature_dict[(x, y)] # 6 hand features
                     x_vectors[6:8, i] = [x, y] #(x, y)
+                # for each hold set whether it is start/end based on index (as combined_list is start:mid:end)
                 x_vectors[8:, 0:n_start] = np.array([[1], [0]])
                 x_vectors[8:, n_start+n_mid:] = np.array([[0], [1]])
 
@@ -188,6 +192,7 @@ def classify_and_reorganize_data(raw_data, save_path, delta_xy_mode = False, pri
             if item['is_benchmark']:
                 if item['user_grade'] is None:
                     X_dict_benchmark_nograde[key] = x_vectors
+                    # TODO: referencing grade_map from outside this file
                     Y_dict_benchmark_nograde[key] = np.array([[grade_map[item['grade']]], 
                                                                 [int(item['is_benchmark'])]])
                 else:
@@ -209,7 +214,8 @@ def classify_and_reorganize_data(raw_data, save_path, delta_xy_mode = False, pri
             
         except:
             print('Raw data with key %s contains error' %key)
-            list_fail.append(key)
+            # list_fail.append(key)
+            raise
 
     output = {'X_dict_benchmark_withgrade': X_dict_benchmark_withgrade,
               'Y_dict_benchmark_withgrade': Y_dict_benchmark_withgrade, 
@@ -240,17 +246,18 @@ def generate_organized_sequence_data(raw_data, save_path):
     X_dict_seq = {}
     list_fail = []
     for key, item in raw_data.items():
-        # try:
-            # TODO: error here
-        output = produce_sequence(keyNum = key, X_dict = raw_data, n_return = 1)
-        result = np.vstack([
-            raw_data[key][6:8, output[0].handSequence], 
-            (np.array(output[0].handOperator) == 'LH')*(-1) + (np.array(output[0].handOperator) == 'RH')*1, 
-            output[0].successScoreSequence])
-        X_dict_seq[key] = result
-        # except:
-        #     print('data with key %s contains error' %key)
-        #     list_fail.append(key)
+        try:
+            output = produce_sequence(keyNum = key, X_dict = raw_data, n_return = 1)
+            result = np.vstack([
+                raw_data[key][6:8, output[0].handSequence], 
+                (np.array(output[0].handOperator) == 'LH')*(-1) + (np.array(output[0].handOperator) == 'RH')*1, 
+                output[0].successScoreSequence
+            ])
+            X_dict_seq[key] = result
+        except:
+            print('data with key %s contains error' %key)
+            # list_fail.append(key)
+            raise
         
         save_pickle(X_dict_seq, save_path)
 
