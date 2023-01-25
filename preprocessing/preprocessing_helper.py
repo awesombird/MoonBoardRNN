@@ -486,7 +486,8 @@ class beta:
                 overallScore = overallScore * makeGaussian(targetXY, 3, (originalXY[0], originalXY[1]), "RH")
         self.overallSuccess = overallScore    
         
-        return overallScore ** (3/numOfHand) 
+        # TODO: sometimes this is an invalid power. Generates RuntimeWarning
+        return overallScore ** (3/numOfHand)
     
     def setTrueBeta(self):
         self.isTrueBeta = True  
