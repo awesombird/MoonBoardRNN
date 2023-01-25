@@ -878,10 +878,14 @@ def produce_sequence(keyNum, X_dict, n_return = 1, printout = False):
     
     return output
 
+def stringToCoordiante(coord_str: str):
+    """Convert coordinate string (e.g. "J5") to integer (9,4)"""
+    coord_str = coord_str.upper()
+    return (ord(coord_str[0]) - ord('A'), int(coord_str[1:]) - 1)
+
 def coordinateToString(coordinate):
-    """ convert (9.0 ,4.0) to "J5" """
-    alphabateList = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"]
-    return str(alphabateList[int(coordinate[0])]) + str(int(coordinate[1]) + 1)
+    """Convert coordinate integer (x,y) to string (e.g. (9,4) to "J5")"""
+    return chr(ord('A') + int(coordinate[0])) + str(int(coordinate[1]) + 1)
 
 # =============================================================
 # Pure hand sequence generation
