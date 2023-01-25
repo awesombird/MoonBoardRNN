@@ -779,9 +779,11 @@ def moveGeneratorForAllProblem(processed_data, save_path, print_result = False):
             if print_result:
                 print('Complete %s' %key)
             output[key] = x_vectors  
-        except:
+        except KeyboardInterrupt:
+            raise
+        except Exception as e:
             print('Raw data with key %s contains error' %key)
-            list_fail.append(key)
+            list_fail.append((key, e))
 
     save_pickle(output, save_path)
     print('result saved.')
