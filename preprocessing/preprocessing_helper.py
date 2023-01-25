@@ -109,7 +109,7 @@ def get_grade_FtToV():
 # ----------------------------------------------------------------------------------------------------------------------
 # early preprocessing steps
 # ----------------------------------------------------------------------------------------------------------------------
-def classify_and_reorganize_data(raw_data, save_path, delta_xy_mode = False, print_result = False):
+def classify_and_reorganize_data(raw_data, save_path, feature_dict, delta_xy_mode = False, print_result = False):
     """
     Input:
     - raw_data: the raw data that is scraped from MoonBoard
@@ -140,17 +140,46 @@ def classify_and_reorganize_data(raw_data, save_path, delta_xy_mode = False, pri
     Y_dict_nograde = {}
     list_fail = []
 
+    grade_map = get_grade_map()
+    no_grade = 0
+    too_many_start_end = 0
+    with_grade = 0
+
     for key, item in raw_data.items():
         # create x_vector for a route
         try:
+            if item.get('grade', None) not in grade_map:
+                no_grade += 1
+                continue
+
+            item['is_benchmark'] = item['isBenchmark']
+
+            item['user_grade'] = item.get('UserGrade', None)
+            if item['user_grade'] not in grade_map:
+                item['user_grade'] = None
+            else:
+                with_grade += 1
+            
+            item['start'] = []
+            item['mid'] = []
+            item['end'] = []
+            for hold in item['moves']:
+                if hold['IsStart']:
+                    item['start'].append(stringToCoordiante(hold['Description']))
+                elif hold['IsEnd']:
+                    item['end'].append(stringToCoordiante(hold['Description']))
+                else:
+                    item['mid'].append(stringToCoordiante(hold['Description']))
+
             # TODO: cant find them in the JSON? start/mid/end holds?
             n_start = len(item['start'])
             n_mid = len(item['mid'])
             n_end = len(item['end'])
             
             # should have at most 2 start and end holds
-            assert(n_start <= 2)
-            assert(n_end <= 2)
+            if n_start > 2 or n_end > 2:
+                too_many_start_end += 1
+                continue
             
             # total number of holds = sum of start, mid and end
             n_hold = n_start + n_mid + n_end
@@ -229,6 +258,7 @@ def classify_and_reorganize_data(raw_data, save_path, delta_xy_mode = False, pri
     
     save_pickle(output, save_path)
     print('result saved.')
+    print(f"Too many start/end: {too_many_start_end}, missing grades: {no_grade}, with grades: {with_grade} :)")
     return output
 
 def generate_organized_sequence_data(raw_data, save_path):
