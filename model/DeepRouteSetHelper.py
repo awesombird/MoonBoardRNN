@@ -87,8 +87,8 @@ def loadSeqXYFromString (stringList, holdStr_to_holdIx, m, numOfPossibleHolds, m
        OutPut shape Y (Tx, Training sample, numOfPossibleHolds + "End") = (12, numOfTrainingSample, n_values)
     """
     n_values = numOfPossibleHolds + 1 # including "End"
-    X = np.zeros((m, maxNumOfHands, n_values), dtype=np.bool)
-    Y = np.zeros((m, maxNumOfHands, n_values), dtype=np.bool)
+    X = np.zeros((m, maxNumOfHands, n_values), dtype=np.bool_)
+    Y = np.zeros((m, maxNumOfHands, n_values), dtype=np.bool_)
     for ixOfSample in range(m):
         # Extract a seq like ['J5-LH', 'J5-RH', 'I9-LH', 'J10-RH', 'H12-RH', 'C13-LH', 'D15-LH', 'E18-RH']
         one_Seq = stringList[ixOfSample]
