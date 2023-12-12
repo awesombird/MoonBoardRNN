@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+problems_2023_01_30/
+.DS_Store
+
 # Distribution / packaging
 .Python
 build/
