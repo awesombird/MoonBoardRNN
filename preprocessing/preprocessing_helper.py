@@ -153,6 +153,8 @@ def classify_and_reorganize_data(raw_data, save_path, delta_xy_mode = False, pri
             item['mid'].sort(key = lambda x: x[1])
             item['end'].sort(key = lambda x: x[1])
             combined_list = item['start'] + item['mid'] + item['end']
+            
+            item
 
             if delta_xy_mode:
                 x_vectors = np.zeros((14, n_hold))
@@ -178,7 +180,7 @@ def classify_and_reorganize_data(raw_data, save_path, delta_xy_mode = False, pri
                 x_vectors[8:, n_start+n_mid:] = np.array([[0], [1]])
 
             # save x_vector into the correct dictionary
-            if item['is_benchmark']:
+            if item['isBenchmark']:
                 if item['user_grade'] is None:
                     X_dict_benchmark_nograde[key] = x_vectors
                     Y_dict_benchmark_nograde[key] = np.array([[grade_map[item['grade']]], 
@@ -358,7 +360,15 @@ class beta:
     
     def getOrderFromHold(self, hold):
         """ from a single hold (np array) to an order"""
-        return np.where((self.allHolds == hold).all(1))[0] # Use np.where to get row indices
+        # gets index in holdarray of specified hold
+        # print(np.where((self.allHolds == hold).all(1))[0])
+        # print(int(np.where((self.allHolds == hold).all(1))[0][0]))
+        if len(np.where((self.allHolds == hold).all(1))[0]) != 1:
+            print(np.where((self.allHolds == hold).all(1)))
+            print(hold)
+            print(self.allHolds)
+            
+        return np.where((self.allHolds == hold).all(1))[0][0] # Use np.where to get row indices
     
     def getCom(self, hold1Order, hold2Order):
         """ Get the coordinate of COM using current both hands order"""
@@ -786,7 +796,7 @@ def gradeTransFromFontToV(processed_data_Y, save_path):
     print('result saved.')
     return output, fail_list
 
-def produce_sequence(keyNum, X_dict, n_return = 1, printout = False):
+def produce_sequence(holds, climbId, n_return = 1, printout = False):
     '''
     Input: 
     - keyNum: the ID number of the problem
@@ -796,11 +806,16 @@ def produce_sequence(keyNum, X_dict, n_return = 1, printout = False):
     - a dictionary with key = the ranking of the output. Specific information of each output can be extracted using
       status.handSequence, status.handOperator, status.overallSuccessRate(), status.successScoreSequence
     '''
-    moonboardTest = X_dict[keyNum]
+    # moonboardTest = X_dict[keyNum] # keyNum, X_dict
+    moonboardTest = holds.T
     #moonboardTestUrl = MoonBoard_2016_withurl[keyNum]
     testbeta = beta(moonboardTest.T)
     status = [beta(moonboardTest.T), beta(moonboardTest.T)]
-    status[0].addStartHolds(0)
+    # print(testbeta.getAllHolds())
+    try:
+        status[0].addStartHolds(0)
+    except:
+        print(climbId)
     status[1].addStartHolds(1)
     tempstatus = []
     tempstatus2 = []
