@@ -23,7 +23,7 @@ def plot_confusion_matrix(Y_true, Y_predict, title=None):
     """
     Plot the confusion matrix.
     """
-    labels = ["V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12", "V13"]
+    labels = ["V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12", "V13", "V14"]
     conf_matrix = metrics.confusion_matrix(Y_true, Y_predict)
     df_cm = pd.DataFrame(
         (conf_matrix / np.sum(conf_matrix, axis=1, keepdims=True)),
