@@ -84,6 +84,7 @@ def get_grade_map():
         '8A': 7,  # V11
         '8A+': 8, # V12
         '8B': 9,  # V13
+        '8B+': 10,  # V14
     }
     return grade_map
 
@@ -104,6 +105,7 @@ def get_grade_FtToV():
         12: 7,
         13: 8, 
         14: 9, #original 8A+, new grade V13. Delete V14 because many people joke on V14
+        15: 10, #original 8A+, new grade V13. Delete V14 because many people joke on V14
     }
     return grade_FtToV
 # ----------------------------------------------------------------------------------------------------------------------
@@ -721,36 +723,37 @@ def moveGeneratorForAllProblem(processed_data, save_path, print_result = False):
     output = {}
     list_fail = []
     
-    for key in processed_data.keys():
-        # create x_vector
+    for climbId in processed_data.keys():
+        # create x_vector # vector representing a list of moves. 
+        # Each move is a 22-d vector.
         try:
-            beamerBeta = produce_sequence(key, processed_data, n_return = 1)[0]
+            beamerBeta = processed_data[climbId]
             numOfMoves = len(beamerBeta.handSequence) - 2
             movesInfoList = moveGenerator(beamerBeta, string_mode = False)
-            x_vectors = np.zeros((22, numOfMoves))
+            encoded_moves = np.zeros((22, numOfMoves))
             
             for orderOfMove, moveInfoDict in enumerate(movesInfoList):   
                 #print(x_vectors[0:2, orderOfMove])
                 #print(moveInfoDict['TargetHoldString'])
                 
-                x_vectors[0:2, orderOfMove] = moveInfoDict['TargetHoldString'] 
-                x_vectors[2, orderOfMove] = moveInfoDict['TargetHoldHand'] # only express once
-                x_vectors[3, orderOfMove] = moveInfoDict['TargetHoldScore']
-                x_vectors[4:6, orderOfMove] = moveInfoDict['RemainingHoldString']
-                x_vectors[6, orderOfMove] = moveInfoDict['RemainingHoldScore']
-                x_vectors[7:9, orderOfMove] = moveInfoDict['dxdyRtoT']
-                x_vectors[9:11, orderOfMove] = moveInfoDict['MovingHoldString']
-                x_vectors[11, orderOfMove] = moveInfoDict['MovingHoldScore']
-                x_vectors[12:14, orderOfMove] = moveInfoDict['dxdyMtoT']
-                x_vectors[14:21, orderOfMove] = moveInfoDict['FootPlacement']
-                x_vectors[21, orderOfMove] = moveInfoDict['MoveSuccessRate']
+                encoded_moves[0:2, orderOfMove] = moveInfoDict['TargetHoldString'] 
+                encoded_moves[2, orderOfMove] = moveInfoDict['TargetHoldHand'] # only express once
+                encoded_moves[3, orderOfMove] = moveInfoDict['TargetHoldScore']
+                encoded_moves[4:6, orderOfMove] = moveInfoDict['RemainingHoldString']
+                encoded_moves[6, orderOfMove] = moveInfoDict['RemainingHoldScore']
+                encoded_moves[7:9, orderOfMove] = moveInfoDict['dxdyRtoT']
+                encoded_moves[9:11, orderOfMove] = moveInfoDict['MovingHoldString']
+                encoded_moves[11, orderOfMove] = moveInfoDict['MovingHoldScore']
+                encoded_moves[12:14, orderOfMove] = moveInfoDict['dxdyMtoT']
+                encoded_moves[14:21, orderOfMove] = moveInfoDict['FootPlacement']
+                encoded_moves[21, orderOfMove] = moveInfoDict['MoveSuccessRate']
                 
             if print_result:
-                print('Complete %s' %key)
-            output[key] = x_vectors  
+                print('Complete %s' %climbId)
+            output[climbId] = encoded_moves  
         except:
-            print('Raw data with key %s contains error' %key)
-            list_fail.append(key)
+            print('Raw data with key %s contains error' %climbId)
+            list_fail.append(climbId)
 
     save_pickle(output, save_path)
     print('result saved.')
